@@ -1,12 +1,15 @@
 const ALL_ROWS = document.querySelectorAll(".row");
 const ALL_SQUARES = document.querySelectorAll(".square");
-const GAME_MESSAGE = document.querySelector(".game-message");
+let GAME_MESSAGE = document.querySelector(".game-message");
+let PLAYER2_AMMO = document.querySelector(".player2-ammo");
 
 class BattleshipApp {
   turn = "Player1-Turn1";
   player1StartingPoint = [];
   player1EndingPoint = [];
   finalPlayer1Coordinates = [];
+  Player2Ammunition = 10;
+  NumberOfSuccessfulHits = 0;
   gameOver = false;
   virtualBoard = [
     [".", ".", ".", ".", ".", "."],
@@ -35,6 +38,7 @@ class BattleshipApp {
     }
   };
 
+  //Add click events to each square, and how to react to it based on whether it's P1 or P2's turn
   addClickEventsToBoard = () => {
     for (let square of ALL_SQUARES) {
       square.addEventListener("click", () => {
@@ -52,6 +56,39 @@ class BattleshipApp {
               this.player1EndingPoint = [clickedRow, clickedCol];
               square.classList.add("clicked");
               this.validatePlayer1Choices();
+              break;
+            case "Player2":
+              //if board position has not been fired at already
+              if (square.innerText === ".") {
+                this.Player2Ammunition--;
+                PLAYER2_AMMO.innerText = `AMMUNITION LEFT: ${this.Player2Ammunition}`;
+                square.innerHTML = "";
+                let row = square.classList[1][1];
+                let col = square.classList[1][3];
+                let virtualBoardValue = this.virtualBoard[row][col];
+                let updatedDOMValue = document.createElement("p");
+                updatedDOMValue.classList.add("square-value");
+                if (virtualBoardValue === "P1") {
+                  updatedDOMValue.innerText = "X";
+                  this.NumberOfSuccessfulHits++;
+                } else {
+                  updatedDOMValue.innerText = "O";
+                }
+                square.append(updatedDOMValue);
+              } else {
+                alert("Please fire somewhere you haven't fired already!");
+              }
+              //if player 2 hits the ship 3 times, player 2 wins
+              if (this.NumberOfSuccessfulHits === 3) {
+                this.gameOver = true;
+                alert("PLAYER 2 HAS WON, YOUVE SUNK THE WHOLE SHIP!");
+              }
+              //if player 2 runs out of ammo, player 1 wins
+              if (this.Player2Ammunition === 0) {
+                this.gameOver = true;
+                alert("PLAYER 1 HAS WON, You have not sunk the whole ship.");
+              }
+              break;
           }
         }
       });
@@ -83,7 +120,7 @@ class BattleshipApp {
       );
     }
     //Check if Player 1 chose a battleship less than 3 squares long
-    if (
+    else if (
       Math.max(Math.abs(endRow - startRow), Math.abs(endCol - startCol)) < 2
     ) {
       this.gameOver = true;
@@ -92,21 +129,28 @@ class BattleshipApp {
       );
     }
     //Check if Player 1 chose a battleship more than 3 squares long
-    if (Math.abs(endRow - startRow) > 2 || Math.abs(endCol - startCol) > 2) {
+    else if (
+      Math.abs(endRow - startRow) > 2 ||
+      Math.abs(endCol - startCol) > 2
+    ) {
       this.gameOver = true;
       alert(
         "Please do not choose a battleship longer than 3 squares long. Please refresh and try again"
       );
     }
     //If everything is valid
-    this.updateVirtualBoardWithPlayer1Choices(
-      parseInt(startRow),
-      parseInt(endRow),
-      parseInt(startCol),
-      parseInt(endCol)
-    );
+    else {
+      alert("You have placed a valid battleship. Player 2's turn will start");
+      this.updateVirtualBoardWithPlayer1Choices(
+        parseInt(startRow),
+        parseInt(endRow),
+        parseInt(startCol),
+        parseInt(endCol)
+      );
+    }
   };
 
+  //Updates the virtual board with Player 1's chosen coordinates
   updateVirtualBoardWithPlayer1Choices = (
     startRow,
     endRow,
@@ -136,7 +180,21 @@ class BattleshipApp {
     this.virtualBoard[middleCoordinate[0]][middleCoordinate[1]] = "P1";
     this.virtualBoard[lastCoordinate[0]][lastCoordinate[1]] = "P1";
 
-    console.log(this.virtualBoard);
+    this.removeP1RedTagsFromBoard();
+  };
+
+  //Removes Player 1's coordinate markers from the board
+  removeP1RedTagsFromBoard = () => {
+    for (let square of ALL_SQUARES) {
+      square.classList.remove("clicked");
+    }
+    this.startP2Turn();
+  };
+
+  startP2Turn = () => {
+    this.turn = "Player2";
+    PLAYER2_AMMO.innerText = `AMMUNITION LEFT: ${this.Player2Ammunition}`;
+    GAME_MESSAGE = "It is now Player 2's Turn! Find the Battleship!";
   };
 }
 
