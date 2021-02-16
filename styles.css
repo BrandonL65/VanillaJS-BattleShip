@@ -46,3 +46,7 @@ body {
   color: red;
   text-align: center;
 }
+
+.game-message {
+  text-align: center;
+}
