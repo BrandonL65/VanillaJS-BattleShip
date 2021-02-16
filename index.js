@@ -6,6 +6,7 @@ class BattleshipApp {
   turn = "Player1-Turn1";
   player1StartingPoint = [];
   player1EndingPoint = [];
+  finalPlayer1Coordinates = [];
   gameOver = false;
   virtualBoard = [
     [".", ".", ".", ".", ".", "."],
@@ -81,30 +82,61 @@ class BattleshipApp {
         "Invalid, please do not choose diagonally. Please refresh and try again"
       );
     }
-
     //Check if Player 1 chose a battleship less than 3 squares long
-    if (Math.max(endRow - startRow, endCol - startCol) < 2) {
+    if (
+      Math.max(Math.abs(endRow - startRow), Math.abs(endCol - startCol)) < 2
+    ) {
       this.gameOver = true;
       alert(
         "Please choose a battleship that is 3 squares long. Please refresh and try again"
       );
     }
-
     //Check if Player 1 chose a battleship more than 3 squares long
     if (Math.abs(endRow - startRow) > 2 || Math.abs(endCol - startCol) > 2) {
       this.gameOver = true;
       alert(
         "Please do not choose a battleship longer than 3 squares long. Please refresh and try again"
       );
-      this.updateVirtualBoardWithPlayer1Choices();
+    }
+    //If everything is valid
+    this.updateVirtualBoardWithPlayer1Choices(
+      parseInt(startRow),
+      parseInt(endRow),
+      parseInt(startCol),
+      parseInt(endCol)
+    );
+  };
+
+  updateVirtualBoardWithPlayer1Choices = (
+    startRow,
+    endRow,
+    startCol,
+    endCol
+  ) => {
+    let firstCoordinate = [startRow, startCol];
+    let lastCoordinate = [endRow, endCol];
+    let middleCoordinate = [];
+    //if the battleship is vertical, else horizontal
+    if (Math.abs(endRow - startRow) !== 0) {
+      middleCoordinate[0] = (parseInt(endRow) + parseInt(startRow)) / 2;
+      middleCoordinate[1] = startCol;
+    } else {
+      middleCoordinate[0] = startRow;
+      middleCoordinate[1] = (parseInt(endCol) + parseInt(startCol)) / 2;
     }
 
-    updateVirtualBoardWithPlayer1Choices = () => {
-      let startRow = this.player1StartingPoint[0];
-      let startCol = this.player1StartingPoint[1];
-      let endRow = this.player1EndingPoint[0];
-      let endCol = this.player1EndingPoint[1];
-    };
+    //update the final player 1 coordinates
+    this.finalPlayer1Coordinates = [
+      firstCoordinate,
+      middleCoordinate,
+      lastCoordinate,
+    ];
+
+    this.virtualBoard[firstCoordinate[0]][firstCoordinate[1]] = "P1";
+    this.virtualBoard[middleCoordinate[0]][middleCoordinate[1]] = "P1";
+    this.virtualBoard[lastCoordinate[0]][lastCoordinate[1]] = "P1";
+
+    console.log(this.virtualBoard);
   };
 }
 
