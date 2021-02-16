@@ -17,13 +17,13 @@ class BattleshipApp {
     [".", ".", ".", ".", ".", "."],
   ];
   constructor() {
-    this.instantiateBoard();
+    this.updateDOMBoard();
     this.startPlayer1Turn1();
     this.addClickEventsToBoard();
   }
 
   //Initial sync of the starting board with the virtualBoard, with "."
-  instantiateBoard = () => {
+  updateDOMBoard = () => {
     for (let square of ALL_SQUARES) {
       let row = square.classList[1][1];
       let col = square.classList[1][3];
