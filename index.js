@@ -6,6 +6,7 @@ class BattleshipApp {
   turn = "Player1-Turn1";
   player1StartingPoint = [];
   player1EndingPoint = [];
+  finalPlayer1Coordinates = [];
   gameOver = false;
   virtualBoard = [
     [".", ".", ".", ".", ".", "."],
@@ -99,10 +100,10 @@ class BattleshipApp {
     }
     //If everything is valid
     this.updateVirtualBoardWithPlayer1Choices(
-      startRow,
-      endRow,
-      startCol,
-      endCol
+      parseInt(startRow),
+      parseInt(endRow),
+      parseInt(startCol),
+      parseInt(endCol)
     );
   };
 
@@ -115,23 +116,27 @@ class BattleshipApp {
     let firstCoordinate = [startRow, startCol];
     let lastCoordinate = [endRow, endCol];
     let middleCoordinate = [];
-    console.log(startRow, endRow);
     //if the battleship is vertical, else horizontal
     if (Math.abs(endRow - startRow) !== 0) {
-      middleCoordinate[0] = (
-        (parseInt(endRow) + parseInt(startRow)) /
-        2
-      ).toString();
+      middleCoordinate[0] = (parseInt(endRow) + parseInt(startRow)) / 2;
       middleCoordinate[1] = startCol;
     } else {
       middleCoordinate[0] = startRow;
-      middleCoordinate[1] = (
-        (parseInt(endCol) + parseInt(startCol)) /
-        2
-      ).toString();
+      middleCoordinate[1] = (parseInt(endCol) + parseInt(startCol)) / 2;
     }
 
-    console.log(firstCoordinate, middleCoordinate, lastCoordinate);
+    //update the final player 1 coordinates
+    this.finalPlayer1Coordinates = [
+      firstCoordinate,
+      middleCoordinate,
+      lastCoordinate,
+    ];
+
+    this.virtualBoard[firstCoordinate[0]][firstCoordinate[1]] = "P1";
+    this.virtualBoard[middleCoordinate[0]][middleCoordinate[1]] = "P1";
+    this.virtualBoard[lastCoordinate[0]][lastCoordinate[1]] = "P1";
+
+    console.log(this.virtualBoard);
   };
 }
 
