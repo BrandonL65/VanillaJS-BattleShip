@@ -50,3 +50,6 @@ body {
 .game-message {
   text-align: center;
 }
+.clicked {
+  background-color: palevioletred;
+}
